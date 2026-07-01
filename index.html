@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>카페 판매 통계</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" id="modeSection">
+        <p class="eyebrow">COMFORTABLE 통계 시스템</p>
+        <h1>작업을 선택하세요</h1>
+        <p class="description">
+          월말 판매 집계 또는 주간 통계를 선택한 뒤 CSV 파일을 업로드합니다.
+        </p>
+
+        <div class="modeGrid">
+          <button id="monthModeBtn" class="modeCard" type="button">
+            <strong>월말 판매 집계</strong>
+            <span>본사 월말 통계 양식에 맞춰 계산합니다.</span>
+          </button>
+
+          <button id="weeklyModeBtn" class="modeCard" type="button">
+            <strong>주간 통계</strong>
+            <span>주간 보고용 통계를 계산합니다.</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="hero" id="uploadSection" hidden>
+        <p class="eyebrow" id="modeEyebrow">월말 판매 집계</p>
+        <h1 id="uploadTitle">CSV 파일 업로드</h1>
+        <p class="description" id="uploadDescription">
+          제품 리포트 CSV 파일을 업로드하면 월말 통계 양식에 맞춰 자동으로 계산합니다.
+        </p>
+
+        <label class="uploadBox" for="csvFile">
+          <span class="uploadIcon">+</span>
+          <strong>CSV 파일 업로드</strong>
+          <span>파일을 선택하거나 여기를 클릭하세요</span>
+        </label>
+
+        <input type="file" id="csvFile" class="fileInput" accept=".csv" />
+
+        <button id="backToModeBtn" class="textButton" type="button">처음으로 돌아가기</button>
+      </section>
+
+      <section class="resultSection" id="resultSection" hidden>
+        <div class="resultHeader">
+          <div>
+            <p class="eyebrow" id="resultEyebrow">업로드 파일</p>
+            <h2 id="fileName">선택된 파일 없음</h2>
+          </div>
+
+          <div class="actionArea">
+            <div class="buttonGroup">
+              <button id="homeBtn" class="resetButton" type="button">처음으로</button>
+              <button id="resetBtn" class="resetButton" type="button">다시 업로드</button>
+              <button id="copyBtn" class="copyButton" disabled>결과 복사</button>
+            </div>
+            <p class="copyGuide">
+              구글 시트에서 <strong>매장명 아래 첫 번째 셀</strong>을 선택한 뒤 붙여넣으세요.
+            </p>
+          </div>
+        </div>
+
+        <div id="statusMessage" class="statusMessage" hidden></div>
+
+        <div class="tableWrap">
+          <table id="resultTable">
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="unknownMenus" class="unknownMenus" hidden></div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
