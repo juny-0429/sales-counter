@@ -79,6 +79,7 @@ export const newDrinkMenus = [
   "바질 토마토 에이드",
   "생망고 주스",
   "트로피컬 망고스무디",
+  "리저브 콜드브루",
 ];
 
 export const singleOriginMenus = [
@@ -93,6 +94,29 @@ export const singleOriginMenus = [
   {
     name: "봄 블렌드",
     price: 10000,
+  },
+];
+
+export const singleBeanMenus = [
+  {
+    name: "의식의 흐름",
+    keywords: ["의식의 흐름"],
+  },
+  {
+    name: "봄 블렌드",
+    keywords: ["봄 블렌드", "2026 봄 블렌드"],
+  },
+  {
+    name: "과테말라 게이샤",
+    keywords: ["과테말라 게이샤"],
+  },
+  {
+    name: "콜롬비아 디카페인",
+    keywords: ["콜롬비아 파라이소92 디카페인", "콜롬비아 디카페인"],
+  },
+  {
+    name: "과테말라 핀카 메디나 Q",
+    keywords: ["과테말라 핀카 메디나 Q"],
   },
 ];
 

@@ -3,6 +3,7 @@ import {
   dessertMenus,
   drinkMenus,
   newDrinkMenus,
+  singleBeanMenus,
   singleOriginMenus,
 } from "./rules.js";
 
@@ -11,6 +12,7 @@ export function calculateWeekly(rows) {
   const drinkPreference = calculateDrinkPreference(rows);
   const newDrinks = calculateNewDrinks(rows);
   const singleOrigin = calculateSingleOrigin(rows);
+  const singleBeans = calculateSingleBeans(rows);
   const dessert = calculateDessert(rows);
 
   return {
@@ -18,6 +20,7 @@ export function calculateWeekly(rows) {
     drinkPreference,
     newDrinks,
     singleOrigin,
+    singleBeans,
     dessert,
   };
 }
@@ -40,7 +43,9 @@ function calculateBeanSales(rows) {
     if (!name || count === 0) return;
 
     Object.entries(beanSalesRules).forEach(([key, rule]) => {
-      const hasKeyword = rule.keywords.some((keyword) => name.includes(keyword));
+      const hasKeyword = rule.keywords.some((keyword) =>
+        name.includes(keyword),
+      );
       const hasExcludeKeyword = rule.excludeKeywords?.some((keyword) =>
         name.includes(keyword),
       );
@@ -94,10 +99,12 @@ function calculateNewDrinks(rows) {
     counts[matchedMenu] += count;
   });
 
-  const items = newDrinkMenus.map((name) => ({
-    name,
-    count: counts[name] ?? 0,
-  }));
+  const items = newDrinkMenus
+    .map((name) => ({
+      name,
+      count: counts[name] ?? 0,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   const totalCount = items.reduce((sum, item) => sum + item.count, 0);
 
@@ -140,6 +147,32 @@ function calculateSingleOrigin(rows) {
     items: itemsWithPercent,
     totalCount,
     totalAmount,
+  };
+}
+
+function calculateSingleBeans(rows) {
+  const items = singleBeanMenus.map((menu) => {
+    const count = rows.reduce((sum, row) => {
+      const name = getProductName(row);
+      const isSingleBeanProduct = name.startsWith("원두:");
+      const isMatched = menu.keywords.some((keyword) => name.includes(keyword));
+
+      if (!isSingleBeanProduct || !isMatched) return sum;
+
+      return sum + getRealSales(row);
+    }, 0);
+
+    return {
+      name: menu.name,
+      count,
+    };
+  });
+
+  const totalCount = items.reduce((sum, item) => sum + item.count, 0);
+
+  return {
+    totalCount,
+    items,
   };
 }
 

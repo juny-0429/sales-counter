@@ -13,6 +13,15 @@ export function renderWeeklyTable(result) {
 
   appendSpacerRow(tbody, 4);
 
+  appendTitleRow(tbody, "싱글 원두 판매량", 2);
+  appendRow(tbody, ["금주 총 판매량", `${result.singleBeans.totalCount}개`], true);
+  appendRow(tbody, ["제품", "수량"], true);
+  result.singleBeans.items.forEach((item) => {
+    appendRow(tbody, [item.name, `${item.count}개`]);
+  });
+
+  appendSpacerRow(tbody, 2);
+
   appendTitleRow(tbody, "음료 선호도 TOP 10", 3);
   appendRow(tbody, ["순위", "메뉴", "수량"], true);
   result.drinkPreference.forEach((item, index) => {
