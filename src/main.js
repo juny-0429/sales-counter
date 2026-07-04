@@ -13,6 +13,7 @@ const weeklyModeBtn = document.getElementById("weeklyModeBtn");
 const backToModeBtn = document.getElementById("backToModeBtn");
 const homeBtn = document.getElementById("homeBtn");
 const fileInput = document.getElementById("csvFile");
+const uploadBox = document.querySelector(".uploadBox");
 const copyBtn = document.getElementById("copyBtn");
 const resetBtn = document.getElementById("resetBtn");
 const uploadSection = document.getElementById("uploadSection");
@@ -33,7 +34,7 @@ monthModeBtn.addEventListener("click", () => {
   modeEyebrow.innerText = "월말 판매 집계";
   uploadTitle.innerText = "월말 판매 집계 CSV 업로드";
   uploadDescription.innerText =
-    "제품 리포트 CSV 파일을 업로드하면 월말 통계 양식에 맞춰 자동으로 계산합니다.";
+    "제품 리포트 CSV 파일을 업로드하면 월말 판매집계에 맞춰 계산합니다.";
   showUploadSection();
 });
 
@@ -43,7 +44,7 @@ weeklyModeBtn.addEventListener("click", () => {
   modeEyebrow.innerText = "주간 통계";
   uploadTitle.innerText = "주간 통계 CSV 업로드";
   uploadDescription.innerText =
-    "제품 리포트 CSV 파일을 업로드하면 주간 보고 양식에 맞춰 자동으로 계산합니다.";
+    "제품 리포트 CSV 파일을 업로드하면 콤포타블:주간회의에 맞춰 계산합니다.";
   showUploadSection();
 });
 
@@ -59,7 +60,40 @@ homeBtn.addEventListener("click", () => {
 
 fileInput.addEventListener("change", async (event) => {
   const file = event.target.files[0];
+  await handleFileUpload(file);
+});
 
+uploadBox.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  uploadBox.classList.add("dragover");
+});
+
+uploadBox.addEventListener("dragleave", () => {
+  uploadBox.classList.remove("dragover");
+});
+
+uploadBox.addEventListener("drop", async (event) => {
+  event.preventDefault();
+  uploadBox.classList.remove("dragover");
+
+  const file = event.dataTransfer.files[0];
+  await handleFileUpload(file);
+});
+
+copyBtn.addEventListener("click", () => {
+  if (currentMode === "weekly") {
+    return;
+  }
+
+  copyTable();
+});
+
+resetBtn.addEventListener("click", () => {
+  resetResult();
+  showUploadSection();
+});
+
+async function handleFileUpload(file) {
   if (!file) return;
 
   if (!currentMode) {
@@ -108,20 +142,7 @@ fileInput.addEventListener("change", async (event) => {
     resultSection.hidden = false;
     showError(error.message);
   }
-});
-
-copyBtn.addEventListener("click", () => {
-  if (currentMode === "weekly") {
-    return;
-  }
-
-  copyTable();
-});
-
-resetBtn.addEventListener("click", () => {
-  resetResult();
-  showUploadSection();
-});
+}
 
 function showModeSection() {
   modeSection.hidden = false;
