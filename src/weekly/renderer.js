@@ -44,17 +44,28 @@ export function renderWeeklyTable(result) {
 
   appendSpacerRow(tbody, 3);
 
-  appendTitleRow(tbody, "디저트", 2);
+  appendTitleRow(tbody, "디저트 / 베이커리", 2);
   appendRow(tbody, ["총 판매 수", `${result.dessert.totalCount}개`], true);
   appendRow(
     tbody,
     ["총 판매 금액", formatCurrency(result.dessert.totalAmount)],
     true,
   );
+  appendRow(
+    tbody,
+    ["베이커리 매출", formatCurrency(result.dessert.bakeryTotalAmount)],
+    true,
+  );
+  appendRow(
+    tbody,
+    ["디저트 매출", formatCurrency(result.dessert.dessertTotalAmount)],
+    true,
+  );
+
   appendRow(tbody, ["메뉴", "판매수"], true);
 
   if (result.dessert.items.length === 0) {
-    appendRow(tbody, ["판매된 디저트 없음", "0개"]);
+    appendRow(tbody, ["판매된 디저트 / 베이커리 없음", "0개"]);
     return;
   }
 

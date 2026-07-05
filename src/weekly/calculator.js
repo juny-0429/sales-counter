@@ -1,4 +1,5 @@
 import {
+  bakeryMenus,
   beanSalesRules,
   dessertMenus,
   drinkMenus,
@@ -68,6 +69,7 @@ function calculateDrinkPreference(rows) {
 
     if (!name || count === 0) return;
     if (isExcludedFromDrinkPreference(name)) return;
+    if (name.includes("세트")) return;
 
     const matchedMenu = findMatchedMenu(name, drinkMenus);
 
@@ -116,19 +118,18 @@ function calculateNewDrinks(rows) {
 
 function calculateSingleOrigin(rows) {
   const items = singleOriginMenus.map((menu) => {
-    const count = rows.reduce((sum, row) => {
+    const matchedRows = rows.filter((row) => {
       const name = getProductName(row);
+      const isMatched = menu.keywords.some((keyword) => name.includes(keyword));
 
-      if (!findMatchedMenu(name, [menu.name])) return sum;
+      return isMatched;
+    });
 
-      return sum + getRealSales(row);
-    }, 0);
-
-    const amount = count * menu.price;
+    const count = matchedRows.reduce((sum, row) => sum + getRealSales(row), 0);
+    const amount = matchedRows.reduce((sum, row) => sum + getNetAmount(row), 0);
 
     return {
       name: menu.name,
-      price: menu.price,
       count,
       amount,
       percent: 0,
@@ -177,11 +178,8 @@ function calculateSingleBeans(rows) {
 }
 
 function calculateDessert(rows) {
-  const items = dessertMenus.map((menu) => ({
-    name: menu,
-    count: 0,
-    amount: 0,
-  }));
+  const dessertItems = createSalesItems(dessertMenus);
+  const bakeryItems = createSalesItems(bakeryMenus);
 
   rows.forEach((row) => {
     const name = getProductName(row);
@@ -189,30 +187,67 @@ function calculateDessert(rows) {
 
     if (!name || count === 0) return;
 
-    const matchedMenu = findMatchedMenu(name, dessertMenus);
+    const matchedDessertMenu = findMatchedMenu(name, dessertMenus);
 
-    if (!matchedMenu) return;
+    if (matchedDessertMenu) {
+      addSalesToItem(dessertItems, matchedDessertMenu, count, getNetAmount(row));
+      return;
+    }
 
-    const target = items.find((item) => item.name === matchedMenu);
+    const matchedBakeryMenu = findMatchedMenu(name, bakeryMenus);
 
-    if (!target) return;
-
-    target.count += count;
-    target.amount += getNetAmount(row);
+    if (matchedBakeryMenu) {
+      addSalesToItem(bakeryItems, matchedBakeryMenu, count, getNetAmount(row));
+    }
   });
 
-  const sortedItems = items
-    .filter((item) => item.count > 0 || item.amount > 0)
-    .sort((a, b) => b.count - a.count);
-
-  const totalCount = items.reduce((sum, item) => sum + item.count, 0);
-  const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
+  const dessertTotalCount = sumCount(dessertItems);
+  const dessertTotalAmount = sumAmount(dessertItems);
+  const bakeryTotalCount = sumCount(bakeryItems);
+  const bakeryTotalAmount = sumAmount(bakeryItems);
 
   return {
-    totalCount,
-    totalAmount,
-    items: sortedItems,
+    totalCount: dessertTotalCount + bakeryTotalCount,
+    totalAmount: dessertTotalAmount + bakeryTotalAmount,
+    dessertTotalCount,
+    dessertTotalAmount,
+    bakeryTotalCount,
+    bakeryTotalAmount,
+    dessertItems: sortSoldItems(dessertItems),
+    bakeryItems: sortSoldItems(bakeryItems),
+    items: sortSoldItems([...dessertItems, ...bakeryItems]),
   };
+}
+
+function createSalesItems(menus) {
+  return menus.map((menu) => ({
+    name: menu,
+    count: 0,
+    amount: 0,
+  }));
+}
+
+function addSalesToItem(items, menuName, count, amount) {
+  const target = items.find((item) => item.name === menuName);
+
+  if (!target) return;
+
+  target.count += count;
+  target.amount += amount;
+}
+
+function sumCount(items) {
+  return items.reduce((sum, item) => sum + item.count, 0);
+}
+
+function sumAmount(items) {
+  return items.reduce((sum, item) => sum + item.amount, 0);
+}
+
+function sortSoldItems(items) {
+  return items
+    .filter((item) => item.count > 0 || item.amount > 0)
+    .sort((a, b) => b.count - a.count);
 }
 
 function createCountMap(menus) {

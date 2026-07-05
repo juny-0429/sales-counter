@@ -80,20 +80,29 @@ export const newDrinkMenus = [
   "생망고 주스",
   "트로피컬 망고스무디",
   "리저브 콜드브루",
+  "우지 말차 라떼",
 ];
 
 export const singleOriginMenus = [
   {
-    name: "의식의 흐름",
-    price: 9000,
+    name: "봄 블렌드(2026)",
+    keywords: ["FB 봄 블렌드(2026)"],
   },
   {
     name: "과테말라 게이샤",
-    price: 9000,
+    keywords: ["FB 과테말라 게이샤"],
   },
   {
-    name: "봄 블렌드",
-    price: 10000,
+    name: "의식의 흐름",
+    keywords: ["FB 의식의흐름", "FB 의식의 흐름"],
+  },
+  {
+    name: "과테말라 핀카 워시드",
+    keywords: ["FB 과테말라 핀카 워시드"],
+  },
+  {
+    name: "콜롬비아 파라이소92 피치 바이올렛 (디카페인)",
+    keywords: ["FB 콜롬비아 파라이소92 피치 바이올렛 (디카페인)"],
   },
 ];
 
@@ -134,6 +143,9 @@ export const dessertMenus = [
   "초코 쉬폰 케이크",
   "시트러스 그라니따",
   "팥빙수 2인",
+];
+
+export const bakeryMenus = [
   "플레인 휘낭시에",
   "슈가코트 휘낭시에",
   "통밀 후추 잼 쿠키",
