@@ -14,7 +14,11 @@ export function renderWeeklyTable(result) {
   appendSpacerRow(tbody, 4);
 
   appendTitleRow(tbody, "싱글 원두 판매량", 2);
-  appendRow(tbody, ["금주 총 판매량", `${result.singleBeans.totalCount}개`], true);
+  appendRow(
+    tbody,
+    ["금주 총 판매량", `${result.singleBeans.totalCount}개`],
+    true,
+  );
   appendRow(tbody, ["제품", "수량"], true);
   result.singleBeans.items.forEach((item) => {
     appendRow(tbody, [item.name, `${item.count}개`]);

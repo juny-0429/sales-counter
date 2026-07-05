@@ -120,9 +120,14 @@ function calculateSingleOrigin(rows) {
   const items = singleOriginMenus.map((menu) => {
     const matchedRows = rows.filter((row) => {
       const name = getProductName(row);
+      const isSingleOriginProduct =
+        name.startsWith("FB ") ||
+        name.startsWith("스페셜 블렌딩:") ||
+        name.startsWith("시즈널 블렌딩:") ||
+        name.includes("게이샤?포레스트?옥션");
       const isMatched = menu.keywords.some((keyword) => name.includes(keyword));
 
-      return isMatched;
+      return isSingleOriginProduct && isMatched;
     });
 
     const count = matchedRows.reduce((sum, row) => sum + getRealSales(row), 0);
@@ -259,6 +264,7 @@ function isExcludedFromDrinkPreference(name) {
     name.includes("원두") ||
     name.includes("드립백") ||
     name.includes("파우치") ||
+    name.includes("영수증") ||
     name.includes("에비앙") ||
     name.includes("산펠레그리노") ||
     name.includes("노아주스") ||
