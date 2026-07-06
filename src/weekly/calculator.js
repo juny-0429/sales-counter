@@ -124,7 +124,13 @@ function calculateSingleOrigin(rows) {
         name.startsWith("FB ") ||
         name.startsWith("스페셜 블렌딩:") ||
         name.startsWith("시즈널 블렌딩:") ||
-        name.includes("게이샤?포레스트?옥션");
+        name.includes("게이샤?포레스트?옥션") ||
+        name.includes("게샤 포레스트 옥션") ||
+        name.includes("스페셜 블렌드") ||
+        name.includes("콜롬비아 파라이소 디카페인") ||
+        name.includes("과테말라 핀카 메디나Q APCA") ||
+        name.includes("과테말라 핀카 메디나 Q APCA") ||
+        name.includes("예멘 모카 마타리 셀렉션 내추럴");
       const isMatched = menu.keywords.some((keyword) => name.includes(keyword));
 
       return isSingleOriginProduct && isMatched;
