@@ -1,4 +1,4 @@
-export function renderWeeklyTable(result) {
+export function renderWeeklyTable(result, options = {}) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
 
@@ -26,7 +26,10 @@ export function renderWeeklyTable(result) {
 
   appendSpacerRow(tbody, 2);
 
-  appendTitleRow(tbody, "음료 선호도 TOP 10", 3);
+  appendDrinkPreferenceTitleRow(
+    tbody,
+    Boolean(options.isSeogyoFilterCombined),
+  );
   appendRow(tbody, ["순위", "메뉴", "수량"], true);
   result.drinkPreference.forEach((item, index) => {
     appendRow(tbody, [`${index + 1}위`, item.name, `${item.count}개`]);
@@ -109,6 +112,36 @@ function appendSingleOriginSummary(tbody, singleOrigin) {
     appendCell(tr3, formatPercent(item.percent));
     tbody.appendChild(tr3);
   });
+}
+
+function appendDrinkPreferenceTitleRow(tbody, isChecked) {
+  const tr = document.createElement("tr");
+  const td = document.createElement("td");
+  const label = document.createElement("label");
+  const checkbox = document.createElement("input");
+  const titleText = document.createElement("span");
+  const checkboxText = document.createElement("span");
+
+  td.colSpan = 3;
+  td.className = "weeklyTitleCell";
+
+  titleText.innerText = "음료 선호도 TOP 10";
+
+  checkbox.type = "checkbox";
+  checkbox.id = "seogyoFilterCoffeeToggle";
+  checkbox.checked = isChecked;
+
+  checkboxText.innerText = " 서교점";
+
+  label.appendChild(checkbox);
+  label.appendChild(checkboxText);
+
+  td.appendChild(titleText);
+  td.appendChild(document.createTextNode(" "));
+  td.appendChild(label);
+
+  tr.appendChild(td);
+  tbody.appendChild(tr);
 }
 
 function appendTitleRow(tbody, title, colspan) {

@@ -8,9 +8,11 @@ import {
   singleOriginMenus,
 } from "./rules.js";
 
-export function calculateWeekly(rows) {
+export function calculateWeekly(rows, options = {}) {
   const beanSales = calculateBeanSales(rows);
-  const drinkPreference = calculateDrinkPreference(rows);
+  const drinkPreference = calculateDrinkPreference(rows, {
+    combineFilterCoffee: Boolean(options.combineFilterCoffeeForPreference),
+  });
   const newDrinks = calculateNewDrinks(rows);
   const singleOrigin = calculateSingleOrigin(rows);
   const singleBeans = calculateSingleBeans(rows);
@@ -60,7 +62,7 @@ function calculateBeanSales(rows) {
   return result;
 }
 
-function calculateDrinkPreference(rows) {
+function calculateDrinkPreference(rows, options = {}) {
   const counts = createCountMap(drinkMenus);
 
   rows.forEach((row) => {
@@ -77,6 +79,34 @@ function calculateDrinkPreference(rows) {
 
     counts[matchedMenu] += count;
   });
+
+  if (options.combineFilterCoffee) {
+    const filterCoffeeCount = rows.reduce((sum, row) => {
+      const name = getProductName(row);
+      const count = getRealSales(row);
+
+      if (!name || count === 0) return sum;
+      if (!isSingleOriginDrinkProduct(name)) return sum;
+
+      const isMatchedSingleOrigin = singleOriginMenus.some((menu) =>
+        menu.keywords.some((keyword) => name.includes(keyword)),
+      );
+
+      if (!isMatchedSingleOrigin) return sum;
+
+      return sum + count;
+    }, 0);
+
+    singleOriginMenus.forEach((menu) => {
+      if (menu.name in counts) {
+        counts[menu.name] = 0;
+      }
+    });
+
+    if (filterCoffeeCount > 0) {
+      counts["필터커피"] = filterCoffeeCount;
+    }
+  }
 
   return Object.entries(counts)
     .map(([name, count]) => ({ name, count }))
@@ -120,17 +150,7 @@ function calculateSingleOrigin(rows) {
   const items = singleOriginMenus.map((menu) => {
     const matchedRows = rows.filter((row) => {
       const name = getProductName(row);
-      const isSingleOriginProduct =
-        name.startsWith("FB ") ||
-        name.startsWith("스페셜 블렌딩:") ||
-        name.startsWith("시즈널 블렌딩:") ||
-        name.includes("게이샤?포레스트?옥션") ||
-        name.includes("게샤 포레스트 옥션") ||
-        name.includes("스페셜 블렌드") ||
-        name.includes("콜롬비아 파라이소 디카페인") ||
-        name.includes("과테말라 핀카 메디나Q APCA") ||
-        name.includes("과테말라 핀카 메디나 Q APCA") ||
-        name.includes("예멘 모카 마타리 셀렉션 내추럴");
+      const isSingleOriginProduct = isSingleOriginDrinkProduct(name);
       const isMatched = menu.keywords.some((keyword) => name.includes(keyword));
 
       return isSingleOriginProduct && isMatched;
@@ -284,6 +304,21 @@ function findMatchedMenu(productName, menuList) {
 
   return sortedMenus.find((menu) =>
     normalizedProductName.includes(normalizeName(menu)),
+  );
+}
+
+function isSingleOriginDrinkProduct(name) {
+  return (
+    name.startsWith("FB ") ||
+    name.startsWith("스페셜 블렌딩:") ||
+    name.startsWith("시즈널 블렌딩:") ||
+    name.includes("게이샤?포레스트?옥션") ||
+    name.includes("게샤 포레스트 옥션") ||
+    name.includes("스페셜 블렌드") ||
+    name.includes("콜롬비아 파라이소 디카페인") ||
+    name.includes("과테말라 핀카 메디나Q APCA") ||
+    name.includes("과테말라 핀카 메디나 Q APCA") ||
+    name.includes("예멘 모카 마타리 셀렉션 내추럴")
   );
 }
 

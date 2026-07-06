@@ -6,6 +6,7 @@ import { calculateWeekly } from "./weekly/calculator.js";
 import { renderWeeklyTable } from "./weekly/renderer.js";
 
 let currentMode = null;
+let currentWeeklyRows = [];
 
 const modeSection = document.getElementById("modeSection");
 const monthModeBtn = document.getElementById("monthModeBtn");
@@ -122,8 +123,14 @@ async function handleFileUpload(file) {
     if (currentMode === "weekly") {
       resultSection.dataset.mode = "weekly";
       resultEyebrow.innerText = "주간 통계용";
-      const result = calculateWeekly(rows);
-      renderWeeklyTable(result);
+      currentWeeklyRows = rows;
+      const result = calculateWeekly(rows, {
+        combineFilterCoffeeForPreference: false,
+      });
+      renderWeeklyTable(result, {
+        isSeogyoFilterCombined: false,
+      });
+      bindSeogyoFilterCoffeeToggle();
       renderStatus([]);
     }
 
@@ -134,6 +141,7 @@ async function handleFileUpload(file) {
     resultSection.hidden = false;
   } catch (error) {
     resultTableBody.innerHTML = "";
+    currentWeeklyRows = [];
     copyBtn.disabled = true;
     resultSection.dataset.mode = "";
     resultEyebrow.innerText = "업로드 파일";
@@ -160,6 +168,7 @@ function resetResult() {
   fileInput.value = "";
   fileName.innerText = "선택된 파일 없음";
   resultTableBody.innerHTML = "";
+  currentWeeklyRows = [];
   copyBtn.disabled = true;
   resultSection.dataset.mode = "";
   resultEyebrow.innerText = "업로드 파일";
@@ -172,6 +181,24 @@ function resetResult() {
 function resetAll() {
   currentMode = null;
   resetResult();
+}
+
+function bindSeogyoFilterCoffeeToggle() {
+  const checkbox = document.getElementById("seogyoFilterCoffeeToggle");
+
+  if (!checkbox) return;
+
+  checkbox.addEventListener("change", () => {
+    const isChecked = checkbox.checked;
+    const result = calculateWeekly(currentWeeklyRows, {
+      combineFilterCoffeeForPreference: isChecked,
+    });
+
+    renderWeeklyTable(result, {
+      isSeogyoFilterCombined: isChecked,
+    });
+    bindSeogyoFilterCoffeeToggle();
+  });
 }
 
 function validateRows(rows) {
